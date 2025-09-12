@@ -39,8 +39,7 @@ def propose_changes(file_path: str, new_content: str) -> str:
 
     Returns:
         A string indicating the outcome:
-        - "applied": Changes were approved and written to the file.
-        - "rejected": Changes were not approved by the user.
+        - whether the change is made or rejected by user.
         - "[Info] No changes detected.": The new content is identical to the original.
         - "[ToolError: ...]": An error occurred during file reading or writing.
     """
@@ -64,11 +63,11 @@ def propose_changes(file_path: str, new_content: str) -> str:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
-            return "applied"
+            return f"changes applied to {file_path}"
         except Exception as e:
             return f"[ToolError: Failed to write changes: {e}]"
     else:
-        return "rejected"
+        return "changes rejected by user"
 
 @tool
 def read_notebook_cells(file_path: str) -> str:

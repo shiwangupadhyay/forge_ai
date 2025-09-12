@@ -5,7 +5,7 @@ from langchain_anthropic import ChatAnthropic
 PROVIDER_MAP = {
     "gemini": {
         "class": ChatGoogleGenerativeAI,
-        "default_model": "gemini-1.5-flash",
+        "default_model": "gemini-2.5-flash",
     },
     "openai": {
         "class": ChatOpenAI,

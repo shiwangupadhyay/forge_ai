@@ -1,11 +1,14 @@
-import sys
 import json
+import time
 from pathlib import Path
-import sqlite3
 
 from .constants import PROVIDER_MAP
 
 class ForgeConfig:
+    """
+    Manages loading and saving of configuration data from a JSON file.
+    This class is NOT responsible for managing the database connection.
+    """
     CONFIG_DIR = Path(".forge")
     CONFIG_DB = CONFIG_DIR / "memory.db"
     CONFIG_FILE = CONFIG_DIR / "config.json"
@@ -17,19 +20,13 @@ class ForgeConfig:
         self.provider = provider
         self.api_key = api_key
         self.model = model or PROVIDER_MAP[provider]["default_model"]
-
-        # Ensure config dir exists
-        ForgeConfig.CONFIG_DIR.mkdir(exist_ok=True)
-
-        # DB connection
-        self.conn = sqlite3.connect(ForgeConfig.CONFIG_DB)
-
-        # LLM instance
         llm_class = PROVIDER_MAP[provider]["class"]
         self.llm = llm_class(model=self.model, api_key=self.api_key)
 
+        ForgeConfig.CONFIG_DIR.mkdir(exist_ok=True)
+
     def save(self):
-        """Save config.json"""
+        """Save provider, api_key, and model into config.json"""
         data = {
             "provider": self.provider,
             "api_key": self.api_key,
@@ -40,7 +37,7 @@ class ForgeConfig:
 
     @classmethod
     def load(cls):
-        """Load from config.json"""
+        """Load config from config.json"""
         if not cls.CONFIG_FILE.exists():
             raise FileNotFoundError("No config.json found. Please set up first.")
         with open(cls.CONFIG_FILE) as f:
@@ -49,20 +46,31 @@ class ForgeConfig:
 
     @classmethod
     def delete(cls):
-        """Delete all stored config + db"""
+        """
+        Delete stored config files, the DB, and the .forge directory itself.
+        Assumes any active connection has already been closed by the caller.
+        """
+        # Delete files first
         if cls.CONFIG_FILE.exists():
             cls.CONFIG_FILE.unlink()
+
         if cls.CONFIG_DB.exists():
-            cls.CONFIG_DB.unlink()
-
-    def close(self):
-        """Close db connection"""
-        if self.conn:
-            self.conn.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb):
-        self.close()
-
+            # Use a robust retry loop for Windows file lock issues
+            attempts = 5
+            for i in range(attempts):
+                try:
+                    cls.CONFIG_DB.unlink()
+                    break  # Success
+                except PermissionError:
+                    if i < attempts - 1:
+                        time.sleep(0.1 * (2**i))
+                    else:
+                        raise # Re-raise after final attempt
+        
+        # Now, delete the directory itself
+        if cls.CONFIG_DIR.exists():
+            try:
+                cls.CONFIG_DIR.rmdir()
+            except OSError as e:
+                # This helps debug if the directory isn't empty for some reason
+                print(f"Could not remove .forge directory: {e}. It may not be empty.")
