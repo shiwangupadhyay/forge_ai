@@ -1,13 +1,13 @@
 import json
 import time
+import sqlite3
 from pathlib import Path
 
 from .constants import PROVIDER_MAP
 
 class ForgeConfig:
     """
-    Manages loading and saving of configuration data from a JSON file.
-    This class is NOT responsible for managing the database connection.
+    Manages loading, saving, and deleting configuration and related data.
     """
     CONFIG_DIR = Path(".forge")
     CONFIG_DB = CONFIG_DIR / "memory.db"
@@ -43,6 +43,23 @@ class ForgeConfig:
         with open(cls.CONFIG_FILE) as f:
             data = json.load(f)
         return cls(**data)
+
+    @classmethod
+    def clear_all_memory(cls):
+        """Deletes all checkpoints from the database, wiping agent memory."""
+        if not cls.CONFIG_DB.exists():
+            return
+        
+        # The table used by SqliteSaver is named 'checkpoints'
+        table_name = "checkpoints"
+        try:
+            with sqlite3.connect(cls.CONFIG_DB) as conn:
+                cursor = conn.cursor()
+                cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+                conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred while clearing memory: {e}")
+
 
     @classmethod
     def delete(cls):
