@@ -30,7 +30,7 @@ def propose_changes(file_path: str, new_content: str) -> str:
 
     This function first reads the existing content of the file (if it exists),
     then generates a colorized diff between the original and new content.
-    If there are changes, it prompts the user for approval to apply them.
+    If the directory for the file doesn't exist, it will be created upon approval.
     Changes are only written to the file if the user approves.
 
     Args:
@@ -39,7 +39,8 @@ def propose_changes(file_path: str, new_content: str) -> str:
 
     Returns:
         A string indicating the outcome:
-        - whether the change is made or rejected by user.
+        - "changes applied to {file_path}": The change was approved and written.
+        - "changes rejected by user": The user did not approve the change.
         - "[Info] No changes detected.": The new content is identical to the original.
         - "[ToolError: ...]": An error occurred during file reading or writing.
     """
@@ -61,6 +62,9 @@ def propose_changes(file_path: str, new_content: str) -> str:
 
     if choice in ("y", "yes"):
         try:
+            parent_dir = os.path.dirname(file_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             return f"changes applied to {file_path}"
