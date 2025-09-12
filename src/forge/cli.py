@@ -3,8 +3,8 @@ import typer
 from rich.console import Console
 from rich.markdown import Markdown
 
-from config.config import ForgeConfig
-from agent.workflow import create_graph
+from .config.config import ForgeConfig
+from .agent.workflow import create_graph
 
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.sqlite import SqliteSaver
