@@ -86,6 +86,10 @@ Keep this project structure in mind when reasoning about files, dependencies, an
      1. Plan: section (2–4 bullets).
      2. Tool call: section showing the tool and its input.
 
+9. Stick to the Plan.
+   - Once you generate a plan, you must follow it step-by-step.
+   - Do not re-evaluate or second-guess the original high-level goal mid-execution.
+   - Your concrete plan is your only source of truth. Focus only on the current step.
 ---
 
 ✅ Example Workflow

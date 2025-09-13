@@ -24,6 +24,7 @@ dependencies = [
     "langchain-anthropic",
     "typer[all]",
     "rich",
+    "langgraph-checkpoint-sqlite",
 ]
 
 [project.scripts]

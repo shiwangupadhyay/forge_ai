@@ -38,7 +38,7 @@ def create_graph(llm, checkpointer):
     builder.add_edge(START, "chat_node")
     builder.add_conditional_edges("chat_node", tools_condition)
     builder.add_edge("tools", "chat_node")
-    builder.add_edge("chat_node", END)
+    # builder.add_edge("chat_node", END)
 
     # Compile the graph with the checkpointer included
     return builder.compile(checkpointer=checkpointer)

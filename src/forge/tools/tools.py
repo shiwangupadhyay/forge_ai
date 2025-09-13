@@ -21,8 +21,6 @@ def read_file(file_path: str) -> str:
     except Exception as e:
         return f"[ToolError: Error reading file '{file_path}': {e}]"
 
-import os
-from langchain_core.tools import tool
 
 @tool
 def propose_changes(file_path: str, new_content: str) -> str:
