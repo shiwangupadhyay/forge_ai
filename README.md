@@ -2,34 +2,6 @@
 
 An AI coding agent that can inspect, reason about, and modify your codebase through an interactive command-line interface. Forge AI empowers developers by automating code inspection, proposing changes with user approval, and understanding complex project structures.
 
-## Project Structure
-
-```
-.
-├── src/
-│   ├── forge/
-│   │   ├── agent/
-│   │   │   ├── __init__.py
-│   │   │   ├── prompt.py           # Defines the core AI agent's system prompt
-│   │   │   ├── test_workflow.py    # Script for testing agent workflow
-│   │   │   └── workflow.py         # LangGraph workflow definition
-│   │   ├── cli.py                  # CLI entry point using Typer
-│   │   ├── config/
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py           # Handles configuration (LLM provider, API keys)
-│   │   │   └── constants.py        # Defines supported LLM providers and models
-│   │   ├── tools/
-│   │   │   ├── __init__.py
-│   │   │   ├── tools.py            # Agent's functional tools (read, propose_changes, etc.)
-│   │   │   └── tool_utils.py       # Helper utilities for tools (diff, data parsing)
-│   │   ├── utils/
-│   │   │   ├── __init__.py
-│   │   │   └── utils.py            # General utilities (project tree generation)
-│   │   └── __init__.py
-├── pyproject.toml              # Project metadata and dependencies
-└── LICENSE                     # Project license details
-```
-
 ## How It Works
 
 Forge AI is built around an advanced agentic architecture powered by `LangGraph`. At its core, it leverages Large Language Models (LLMs) to understand user requests, reason about a codebase, and execute specialized tools to achieve its goals.
@@ -51,16 +23,6 @@ Forge AI is built around an advanced agentic architecture powered by `LangGraph`
 *   **Conversation Memory**: Persists chat history across sessions using SQLite.
 *   **Project Structure Awareness**: Agent builds a dynamic understanding of your project layout.
 *   **Data & Notebook Inspection**: Specialized tools for summarizing datasets and reading Jupyter Notebooks.
-
-## Technologies Used
-
-*   **Python**: The core programming language.
-*   **Typer**: For building a robust and user-friendly command-line interface.
-*   **Rich**: Enhances terminal output with rich text, colors, and progress bars.
-*   **LangChain**: Provides the foundational framework for building LLM applications.
-*   **LangGraph**: Powers the agent's stateful, cyclical reasoning and tool-use workflows.
-*   **SqliteSaver**: Manages persistent conversation memory for LangGraph.
-*   **LangChain Providers**: Integrations for `ChatOpenAI`, `ChatGoogleGenerativeAI`, `ChatAnthropic`.
 
 ## Installation & Usage
 
