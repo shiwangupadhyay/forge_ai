@@ -47,7 +47,7 @@ def init(
     try:
         cfg = ForgeConfig(provider=provider, api_key=api_key, model=model)
         cfg.save()
-        console.print(f"[bold green]✅ Configuration saved successfully![/bold green]")
+        console.print(f"[bold green]Configuration saved successfully!, Run `forge` to ignite 🔥[/bold green]")
         console.print(f"Provider: {cfg.provider}, Model: {cfg.model}")
     except ValueError as e:
         console.print(f"[bold red]Error: {e}[/bold red]")
@@ -66,6 +66,21 @@ def _run_chat_repl(thread_id: str | None):
 
     if not thread_id:
         thread_id = str(uuid.uuid4())
+        forge_ascii = r"""
+         _______  _____   ______  ______ _______
+        |______ |     | |_____/ |  ____ |______
+        |       |_____| |    \_ |_____| |______
+                                                
+        """
+
+        # Gradient colors
+        colors = ["#FFFF33", "#FFD700", "#FFA500", "#FF4500", "#FF0000", "#8B0000"]
+
+        for i, line in enumerate(forge_ascii.splitlines()):
+            color = colors[i % len(colors)]
+            styled_line = f"[bold {color}]{line}[/bold {color}]"
+            console.print(styled_line)
+
         console.print(
             Markdown(f"**New chat session started. Your Thread ID is:** `{thread_id}`")
         )
@@ -73,7 +88,7 @@ def _run_chat_repl(thread_id: str | None):
             "You can use this ID with the main command to continue this conversation later."
         )
 
-    console.print("[cyan]Forge is igniting 🔥 \nType 'exit' or 'quit' to end.[/cyan]")
+    console.print("[cyan]Type 'exit' or 'quit' to end.[/cyan]")
 
     with SqliteSaver.from_conn_string(str(ForgeConfig.CONFIG_DB)) as checkpointer:
         graph = create_graph(cfg.llm, checkpointer)
@@ -104,7 +119,7 @@ def _run_chat_repl(thread_id: str | None):
     if typer.confirm("Do you want to clear all conversation memory?"):
         ForgeConfig.clear_all_memory()
         console.print(
-            "[bold green]✅ All conversation memory has been cleared.[/bold green]"
+            "[bold green]All conversation memory has been cleared.[/bold green]"
         )
 
     if typer.confirm(
@@ -114,7 +129,7 @@ def _run_chat_repl(thread_id: str | None):
         # held by the recently closed database connection, which can linger on Windows.
         gc.collect()
         ForgeConfig.delete()
-        console.print("[bold green]✅ All Forge data has been deleted.[/bold green]")
+        console.print("[bold green]All Forge data has been deleted.[/bold green]")
 
 
 @app.callback()
@@ -142,8 +157,7 @@ def clear_memory():
     Clear all conversation history from the database.
     """
     ForgeConfig.clear_all_memory()
-    console.print(f"[bold green]✅ All conversation memory has been cleared.[/bold green]")
-
+    console.print('[bold green]🔥 Forge whispers:[/bold green] "All past echoes have been burned away... the slate is clean."')
 
 @app.command()
 def stop():
@@ -156,12 +170,12 @@ def stop():
         ):
             ForgeConfig.delete()
             console.print(
-                "[bold green]✅ Forge configuration and memory have been reset.[/bold green]"
+                '[bold green]🌱 Forge breathes anew:[/bold green] "All memory has turned to ash, and a fresh path begins."'
             )
         else:
             console.print("Operation cancelled.")
     else:
-        console.print("Nothing to stop. The .forge directory does not exist.")
+        console.print('[italic yellow]⚡ Forge whispers:[/italic yellow] "There\'s nothing here to stop... the fire never even started."')
 
 
 if __name__ == "__main__":
