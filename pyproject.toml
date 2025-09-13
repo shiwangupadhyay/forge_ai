@@ -25,7 +25,7 @@ dependencies = [
 ]
 keywords = [
     "forge",
-    "forge-ai"
+    "forge-ai",
     "ai",
     "openai",
     "gemini",
@@ -34,7 +34,7 @@ keywords = [
     "cli",
     "agent",
     "cli-agent",
-    "coding-agent"
+    "coding-agent",
 ]
 
 [project.optional-dependencies]
