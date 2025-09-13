@@ -1,16 +1,13 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "forge-ai-agent"
+name = "forge-ai"
 version = "0.1.0"
+dynamic = ["readme"]
 authors = [
-    { name = "Your Name", email = "you@example.com" },
+  { name = "Shiwang Upadhyay"}, 
+  {email = "shiwangupadhyay8@gmail.com" }
 ]
 description = "An AI coding agent that can inspect, reason about, and modify your codebase."
-readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -26,9 +23,36 @@ dependencies = [
     "rich",
     "langgraph-checkpoint-sqlite",
 ]
+keywords = [
+    "forge",
+    "forge-ai"
+    "ai",
+    "openai",
+    "gemini",
+    "automation",
+    "developer-tools",
+    "cli",
+    "agent",
+    "cli-agent",
+    "coding-agent"
+]
+
+[project.optional-dependencies]
+docify-ai = ["docify-ai"]
+all = ["docify-ai"]
+
+[tool.setuptools]
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.md", "CHANGELOG.md"], content-type = "text/markdown" }
 
 [project.scripts]
 forge = "forge.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.urls]
+Homepage = "https://github.com/shiwangupadhyay/forge_ai"
+Repository = "https://github.com/shiwangupadhyay/forge_ai"
+Issues = "https://github.com/shiwangupadhyay/forge_ai/issues"

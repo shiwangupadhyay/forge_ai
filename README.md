@@ -1,6 +1,15 @@
-# Forge: The AI Coding Agent
+# Forge AI: Your Coding Agent
 
-An intelligent agent designed to inspect, reason about, and safely modify your codebase, Jupyter notebooks, and datasets. Forge empowers developers by automating code understanding, refactoring suggestions, and data insights directly from the command line.
+An intelligent AI coding agent that can inspect, reason about, and safely modify your codebase. Forge AI provides an interactive command-line interface to empower developers with an AI assistant directly in their projects.
+
+## Key Features
+
+*   **Intelligent Code Inspection**: Utilizes tools to `read_file`, `read_notebook_cells`, and `summarize_dataset` to understand your project context.
+*   **Reasoning and Planning**: Employs an advanced LangGraph workflow to formulate plans and execute steps to address your requests.
+*   **Safe Code Modification**: Proposes changes via `propose_changes` tool, showing a detailed diff and requiring explicit user approval before any file modifications.
+*   **Multi-LLM Support**: Configurable with various LLM providers including OpenAI, Google Gemini, and Anthropic.
+*   **Persistent Memory**: Remembers past conversations and context across sessions using SQLite checkpointing.
+*   **CLI-First Experience**: Seamless integration into your development workflow via a `typer`-powered command-line interface.
 
 ## Project Structure
 
@@ -8,124 +17,190 @@ An intelligent agent designed to inspect, reason about, and safely modify your c
 .
 ├── LICENSE
 ├── pyproject.toml
-├── README.md
+├── requirements.txt
 └── src/
     └── forge/
-        ├── agent/             # Core AI agent logic, workflow, and system prompt
-        │   ├── prompt.py      # The detailed system prompt guiding the agent's behavior
-        │   ├── test_workflow.py # Example for testing agent persistence
-        │   └── workflow.py    # LangGraph definition for the agent's state and transitions
-        ├── cli.py             # Typer CLI application entry point for user interaction
-        ├── config/            # Configuration management for LLM providers and persistence
-        │   ├── config.py      # Handles saving/loading configuration and database operations
-        │   └── constants.py   # Maps LLM providers to their LangChain classes and default models
-        ├── tools/             # Custom tools the AI agent can use to interact with the environment
-        │   ├── tools.py       # Definitions of `read_file`, `propose_changes`, etc.
-        │   └── tool_utils.py  # Helper functions for tools (e.g., diff generation, data parsing)
+        ├── agent/
+        │   ├── prompt.py       # Core AI agent's system prompt and instructions
+        │   ├── workflow.py     # Defines the LangGraph agent's state and flow
+        │   └── test_workflow.py # Example for testing the agent workflow
+        ├── cli.py              # Main CLI application (Typer)
+        ├── config/
+        │   ├── config.py       # Manages LLM configuration and persistence
+        │   └── constants.py    # LLM provider details and defaults
+        ├── tools/
+        │   ├── tools.py        # Definitions of the agent's callable tools
+        │   └── tool_utils.py   # Helper functions for tools (e.g., diff, data parsing)
         └── utils/
-            └── utils.py       # General utility functions, e.g., project tree generation
+            └── utils.py        # Utility functions (e.g., project tree generation)
 ```
-
-## Key Features
-
-*   **Intelligent Code Inspection**: Read and understand source code files.
-*   **Controlled Code Modification**: Propose and apply changes to files with user approval via unified diffs.
-*   **Jupyter Notebook Analysis**: Extract and summarize content from `.ipynb` files.
-*   **Dataset Summarization**: Analyze and provide schema/sample rows for CSV, TSV, JSON, and NDJSON files.
-*   **Interactive Chat REPL**: Engage with the agent in a conversational command-line interface.
-*   **Persistent Conversation Memory**: Continue sessions across restarts using SQLite-backed memory.
-*   **Configurable LLM Providers**: Support for OpenAI, Google Gemini, and Anthropic models.
-*   **Clear & Concise Output**: Utilizes `rich` for enhanced terminal experience.
 
 ## Technologies Used
 
-*   **Python 3.9+**
-*   **LangChain**: For LLM integration and message handling.
-*   **LangGraph**: To define and manage the agent's stateful, multi-turn workflow.
-*   **Typer**: For building a robust and user-friendly command-line interface.
-*   **Rich**: For beautiful and informative terminal output.
-*   **SQLite**: For persisting conversation memory across sessions.
+*   **Python**: Primary development language.
+*   **LangChain**: Framework for developing applications powered by language models.
+*   **LangGraph**: Library for building stateful, multi-actor applications with LLMs, forming the core of the agent's reasoning.
+*   **Typer**: Modern, fast, and easy-to-use library for building CLI applications.
+*   **Rich**: For beautiful terminal output (syntax highlighting, diffs, console styling).
+*   **SQLite**: Used for persistent conversation memory/checkpoints by `langgraph-checkpoint-sqlite`.
+*   **LLM Providers**: OpenAI, Google Gemini, Anthropic (configurable).
 
 ## Installation & Usage
 
 ### Prerequisites
 
-Ensure you have Python 3.9 or higher installed.
+*   Python 3.8+
+*   An API key for one of the supported LLM providers (e.g., OpenAI, Google, Anthropic).
 
 ### Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/shiwangupadhyay/forge-ai-agent.git
-    cd forge-ai-agent
-    ```
-2.  **Install the package in editable mode:**
-    ```bash
-    pip install .
-    ```
-    This makes the `forge` command available in your terminal.
-
-### Configuration (`forge init`)
-
-Before using the agent, you need to configure your LLM provider and API key.
+It is recommended to install `forge-ai` using `pipx` for a clean CLI experience, isolating it from your other Python projects:
 
 ```bash
-forge init --provider openai --api-key sk-your-openai-key --model gpt-4o-mini
-# OR
-forge init --provider gemini --api-key your-gemini-key --model gemini-2.5-flash
-# OR
-forge init --provider anthropic --api-key sk-your-anthropic-key --model claude-3-haiku-20240307
+pip install pipx
+pipx install . # If cloned locally, run from root
+# Or from PyPI (once available)
+# pipx install forge-ai
 ```
 
-This command creates a `.forge` directory in your current working directory, which stores your `config.json` and `memory.db` files.
+Alternatively, you can install it using `pip`:
+
+```bash
+# Clone the repository
+git clone https://github.com/shiwangupadhyay/forge_ai.git
+cd forge_ai
+
+# Install dependencies
+pip install -r requirements.txt
+# Or using pyproject.toml
+pip install .
+
+# Make the 'forge' command available (if not using pipx)
+# This might depend on your system's PATH configuration
+```
+
+### Configuration
+
+Before using Forge AI, you need to initialize it with your LLM provider and API key:
+
+```bash
+forge init --provider <provider_name> --api-key <your_api_key> [--model <model_name>]
+```
+
+**Example:**
+
+```bash
+forge init --provider openai --api-key sk-YOUR_OPENAI_KEY
+forge init --provider gemini --api-key YOUR_GEMINI_KEY --model gemini-1.5-flash
+forge init --provider anthropic --api-key YOUR_ANTHROPIC_KEY
+```
+
+Supported providers: `openai`, `gemini`, `anthropic`.
 
 ### Starting a Chat Session
 
-Run the `forge` command without any subcommands to start an interactive chat REPL:
+Run `forge` without any subcommands to start an interactive chat REPL (Read-Eval-Print Loop) with the AI agent.
 
 ```bash
 forge
 ```
 
-To continue a previous conversation, use the `--thread-id` option (the ID is provided when a new session starts):
+To continue a previous conversation, use the `--thread-id` option (the ID will be provided when a new session starts):
 
 ```bash
-forge --thread-id <your-session-thread-id>
+forge --thread-id <your_thread_id>
 ```
 
-Type `exit` or `quit` to end the session.
+### Agent Interaction Example
 
-## Agent Capabilities
+When you interact with Forge AI, it follows a structured approach:
 
-Forge is powered by a LangGraph agent that leverages a set of specialized tools to interact with your local environment, guided by a sophisticated system prompt.
+1.  **Plan**: The agent formulates a plan (2-4 bullets) for the next step.
+2.  **Tool Call**: The agent calls one of its internal tools based on the plan.
+3.  **Result Summary**: After the tool executes, the agent summarizes the output.
+4.  **Next Plan**: Based on the results, the agent forms a new plan and calls the next tool.
 
-### Core Agent Logic
+**Example Flow (simplified for clarity):**
 
-The agent operates based on a detailed system prompt (`src/forge/agent/prompt.py`) that guides its reasoning, planning, and tool-calling decisions. It adheres to a strict "Plan → Tool Call → Analyze → Next Plan" workflow, ensuring transparent and controlled interactions. The agent's conversational memory is managed by LangGraph's `SqliteSaver`, enabling stateful conversations that persist across sessions.
+```bash
+You: Can you check the `src/utils/utils.py` file for any issues?
 
-### Agent Tools
+Forge:
+Plan:
+- Inspect src/utils/utils.py to understand its purpose.
+- Use read_file to fetch the file content.
+Tool call:
+read_file("src/utils/utils.py")
 
-The agent can utilize the following custom tools to fulfill user requests:
+<Tool Output: Content of utils.py is displayed by the agent or processed internally.>
 
-*   **`read_file(file_path: str)`**:
-    Reads and returns the entire content of a specified text file. Useful for inspecting existing code or documentation.
+Forge:
+Result summary:
+- The `generate_project_tree` function is present.
+Next Plan:
+- Analyze the function logic for potential improvements.
+- Suggest a change using propose_changes.
+Tool call:
+propose_changes(
+  "src/utils/utils.py",
+  new_content="<full file text with suggested changes>"
+)
 
-*   **`propose_changes(file_path: str, new_content: str)`**:
-    This is the primary tool for modifying files. It reads the existing content, generates a colorized unified diff, and prompts the user for approval in the terminal before applying any changes. This ensures human oversight for all modifications.
+<Diff is shown in terminal for user review>
+Apply changes to src/utils/utils.py? [y/N]: y
 
-*   **`read_notebook_cells(file_path: str)`**:
-    Reads a Jupyter Notebook (`.ipynb`) and extracts all cell source content, providing a consolidated view for analysis.
+Forge:
+Result summary:
+- File updated successfully.
+Next Plan:
+- Suggest running relevant tests or manual verification.
+```
 
-*   **`summarize_dataset(file_path: str)`**:
-    Inspects data files (CSV, TSV, JSON, NDJSON) and provides a summary including schema, inferred types, and a few sample rows. Essential for understanding data before suggesting data-driven code changes.
+### Agent Commands
 
-## CLI Commands
+*   `forge init`: Initialize the agent with your LLM provider and API key.
+*   `forge`: Start an interactive chat REPL.
+*   `forge --thread-id <ID>`: Continue a conversation.
+*   `forge clear-memory`: Deletes all conversation history but keeps your LLM configuration.
+*   `forge stop`: Deletes the entire `.forge` directory, including configuration and all conversation memory. This is irreversible.
 
-*   **`forge`**: Starts the interactive chat REPL. Use `--thread-id` to resume a session.
-*   **`forge init --provider <provider> --api-key <key> [--model <model>]`**: Initializes the agent's configuration.
-*   **`forge clear_memory`**: Deletes all conversation history from the local SQLite database.
-*   **`forge stop`**: Deletes the entire `.forge` directory, including configuration and all conversation memory. This is irreversible and requires confirmation.
+## Agent Capabilities & Mechanics
+
+Forge AI operates as a LangGraph agent, leveraging a predefined set of tools to achieve its goals.
+
+### Agent Workflow (Simplified)
+
+The agent's core loop involves:
+
+1.  Receiving a user message.
+2.  The LLM, guided by a comprehensive system prompt (`src/forge/agent/prompt.py`), generates a plan and decides which tool to use.
+3.  The chosen tool (`src/forge/tools/tools.py`) is executed.
+4.  The tool's output is fed back to the LLM.
+5.  This loop continues until the agent deems the task complete or requires further user input.
+
+### Available Tools
+
+The agent can utilize the following tools:
+
+*   **`read_file(path: str)`**: Reads the content of any text file. Essential for understanding existing code.
+*   **`propose_changes(path: str, new_content: str)`**: The primary tool for modifying files. It generates a diff, presents it to the user, and only applies changes upon explicit user approval. This ensures safety and user control.
+*   **`read_notebook_cells(path: str)`**: Specifically designed to extract and concatenate cell sources from Jupyter notebooks (`.ipynb`), allowing the agent to analyze notebook content.
+*   **`summarize_dataset(path: str)`**: Inspects data files (CSV, TSV, JSON, NDJSON) to provide a summary including schema and sample rows, aiding in data-driven reasoning.
+
+### Supported LLM Providers
+
+Forge AI supports integration with popular LLM APIs:
+
+*   **OpenAI**: `gpt-4o-mini` (default), `gpt-4`, etc.
+*   **Google Gemini**: `gemini-2.5-flash` (default), `gemini-1.5-pro`, etc.
+*   **Anthropic**: `claude-3-haiku-20240307` (default), `claude-3-opus`, etc.
+
+You specify your preferred provider during the `forge init` step.
+
+### Conversation Memory
+
+The agent maintains conversation memory using `langgraph-checkpoint-sqlite`, storing chat history in a local `.forge/memory.db` file. This allows the agent to recall previous interactions and maintain context across sessions, enabling long-running or multi-step tasks.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
