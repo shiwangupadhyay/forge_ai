@@ -2,19 +2,7 @@
 
 An AI coding agent that can inspect, reason about, and modify your codebase through an interactive command-line interface. Forge AI empowers developers by automating code inspection, proposing changes with user approval, and understanding complex project structures.
 
-## How It Works
-
-Forge AI is built around an advanced agentic architecture powered by `LangGraph`. At its core, it leverages Large Language Models (LLMs) to understand user requests, reason about a codebase, and execute specialized tools to achieve its goals.
-
-1.  **Agentic Workflow**: The agent uses a `StateGraph` to manage its conversation state and decide its next action:
-    *   It receives a user message (e.g., "Fix a bug," "Add a feature").
-    *   It consults its system prompt (defined in `agent/prompt.py`) which includes a dynamic project structure overview.
-    *   It uses the LLM to decide whether to respond directly or call one of its available tools.
-2.  **Tool-Use**: The agent is equipped with powerful tools that allow it to interact with the project environment. It calls these tools to inspect files, propose changes, and understand data.
-3.  **Interactive Changes**: When the agent proposes a code modification, it generates a clear, colorized diff for the user's review and requires explicit approval before applying any changes, ensuring safety and control.
-4.  **Conversation Memory**: All interactions are stored in a SQLite database, allowing the agent to maintain context and continue conversations across sessions using a `thread_id`.
-
-## Key Features
+## ✨ Key Features
 
 *   **Interactive CLI**: Engage with the AI agent directly from your terminal.
 *   **Intelligent Code Modification**: Agent can inspect, reason about, and propose code changes.
@@ -23,8 +11,10 @@ Forge AI is built around an advanced agentic architecture powered by `LangGraph`
 *   **Conversation Memory**: Persists chat history across sessions using SQLite.
 *   **Project Structure Awareness**: Agent builds a dynamic understanding of your project layout.
 *   **Data & Notebook Inspection**: Specialized tools for summarizing datasets and reading Jupyter Notebooks.
+*   **Code Execution Capabilities**: Can execute the code and analyze the outputs or errors.
 
-## Installation & Usage
+
+## 🚀 Installation & Usage
 
 ### Prerequisites
 
@@ -32,10 +22,10 @@ Forge AI is built around an advanced agentic architecture powered by `LangGraph`
 
 ### Installation
 
-1.  **Install from PyPI**:
-    ```bash
-    pip install forge-ai
-    ```
+**Install from PyPI**:
+```bash
+pip install forge-ai
+```
 
 ### Configuration
 
