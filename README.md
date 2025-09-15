@@ -1,13 +1,13 @@
 # Forge AI: Intelligent Coding Agent
 
 [
-![PyPI - Version](https://img.shields.io/pypi/v/docify-ai.svg?style=flat-square)
+![PyPI - Version](https://img.shields.io/pypi/v/forge-ai.svg?style=flat-square)
 ](https://pypi.org/project/forge-ai/)
 [
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/docify-ai.svg?style=flat-square)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/forge-ai.svg?style=flat-square)
 ](https://pypi.org/project/forge-ai/)
 [
-![Downloads](https://static.pepy.tech/badge/docify-ai)
+![Downloads](https://static.pepy.tech/badge/forge-ai)
 ](https://pepy.tech/project/forge-ai)
 
 An AI coding agent that can inspect, reason about, and modify your codebase through an interactive command-line interface. Forge AI empowers developers by automating code inspection, proposing changes with user approval, and understanding complex project structures.
