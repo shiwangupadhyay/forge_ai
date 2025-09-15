@@ -1,7 +1,11 @@
 from langchain_core.tools import tool
+from rich.console import Console
+from rich.panel import Panel
 
 import os
+import sys
 import json
+import subprocess
 
 from .tool_utils import _show_diff, _extract_csv_tsv, _extract_json
 
@@ -134,3 +138,99 @@ def summarize_dataset(file_path: str) -> str:
         for row in sample_rows:
             lines.append(" | ".join(str(v) for v in row.values()) if isinstance(row, dict) else str(row))
     return "\n".join(lines)
+
+@tool
+def execute_code(code: str) -> str:
+    """
+    Executes a given string of Python code after getting user permission.
+    It captures and returns the code's output and errors.
+
+    Args:
+        code: A string containing the Python code to be executed.
+
+    Returns:
+        A string containing the outcome: execution output, user rejection, or an error.
+    """
+    console = Console()
+
+    prompt_panel = Panel(
+        f"[cyan]{code}[/cyan]\n\n"
+        f"[bold red]Warning: Executing this code can modify files and interact with your system.[/bold red]",
+        title="[bold yellow]Permission Required to Execute Code[/bold yellow]",
+        border_style="yellow",
+        expand=False
+    )
+    console.print(prompt_panel)
+    
+    try:
+        # Ask for user confirmation.
+        choice = console.input("[bold]Do you approve? [y/N]:[/bold] ").strip().lower()
+        if choice not in ('y', 'yes'):
+            return "[Action Rejected by User] Code execution cancelled."
+    except KeyboardInterrupt:
+        return "[Action Rejected by User] Code execution cancelled."
+
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30 
+        )
+        output = ""
+        if result.stdout:
+            output += f"--- Output ---\n{result.stdout}\n"
+        if result.stderr:
+            output += f"--- Error ---\n{result.stderr}\n"
+        if not output:
+            return "Code executed with no output."
+            
+        return output
+
+    except subprocess.TimeoutExpired:
+        return "[ToolError: Code execution timed out after 30 seconds.]"
+    except Exception as e:
+        return f"[ToolError: An unexpected error occurred: {e}]"
+    
+@tool
+def write_notebook(file_path: str, notebook_json: str) -> str:
+    """
+    Writes a JSON string to a .ipynb file after getting user permission.
+
+    This tool is for saving a complete Jupyter Notebook. The agent must generate
+    the full, valid JSON content of the notebook first.
+
+    Args:
+        file_path: The path to the .ipynb file to create (e.g., 'analysis.ipynb').
+        notebook_json: A string containing the full, valid JSON of the notebook.
+
+    Returns:
+        A string indicating the outcome of the operation.
+    """
+    if not file_path.endswith(".ipynb"):
+        return "[ToolError: file_path must end with .ipynb]"
+    
+    print(f"\n--- Notebook to be created at: {file_path} ---")
+    try:
+        # Ask for user confirmation.
+        choice = input("Do you want to create/update this notebook? [y/N]: ").strip().lower()
+        if choice not in ('y', 'yes'):
+            return "[Action Rejected by User] Notebook creation cancelled."
+    except KeyboardInterrupt:
+        return "[Action Rejected by User] Notebook creation cancelled."
+    
+    try:
+        notebook_data = json.loads(notebook_json)
+        parent_dir = os.path.dirname(file_path)
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+            
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(notebook_data, f, indent=2)
+            
+        return f"Successfully wrote notebook to {file_path}"
+    except json.JSONDecodeError:
+        return "[ToolError: The provided 'notebook_json' string is not valid JSON.]"
+    except Exception as e:
+        return f"[ToolError: An unexpected error occurred: {e}]"

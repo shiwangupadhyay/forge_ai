@@ -6,7 +6,7 @@ from langgraph.graph.message import add_messages
 from typing import TypedDict, Annotated
 
 from .prompt import CODING_AGENT_PROMPT
-from ..tools.tools import read_file, propose_changes, read_notebook_cells, summarize_dataset
+from ..tools.tools import read_file, propose_changes, read_notebook_cells, summarize_dataset, execute_code, write_notebook
 from ..utils.utils import generate_project_tree
 
 # State definition
@@ -14,7 +14,7 @@ class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
 # The agent's tools
-TOOLS = [read_file, propose_changes, read_notebook_cells, summarize_dataset]
+TOOLS = [read_file, propose_changes, read_notebook_cells, summarize_dataset, execute_code, write_notebook]
 
 def create_graph(llm, checkpointer):
     """
@@ -38,7 +38,6 @@ def create_graph(llm, checkpointer):
     builder.add_edge(START, "chat_node")
     builder.add_conditional_edges("chat_node", tools_condition)
     builder.add_edge("tools", "chat_node")
-    # builder.add_edge("chat_node", END)
 
     # Compile the graph with the checkpointer included
     return builder.compile(checkpointer=checkpointer)

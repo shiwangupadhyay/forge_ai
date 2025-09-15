@@ -67,15 +67,15 @@ def _run_chat_repl(thread_id: str | None):
     if not thread_id:
         thread_id = str(uuid.uuid4())
         forge_ascii = r"""
-         _______  _____   ______  ______ _______
+         _______ _____   ______  ______  ______
         |______ |     | |_____/ |  ____ |______
         |       |_____| |    \_ |_____| |______
                                                 
-        """
+        """       
 
         # Gradient colors
         colors = ["#FFFF33", "#FFD700", "#FFA500", "#FF4500", "#FF0000", "#8B0000"]
-
+    
         for i, line in enumerate(forge_ascii.splitlines()):
             color = colors[i % len(colors)]
             styled_line = f"[bold {color}]{line}[/bold {color}]"
